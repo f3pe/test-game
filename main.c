@@ -1,9 +1,15 @@
 #include <GL/glut.h>
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#define PI 3.141592653
 
-float px, py; //player possition
 
+
+
+float px, py, pdx, pdy, pa; //player possition
+
+/* Map config*/
 int mapX = 10, mapY=10, mapS = 60;
 int map[10][10] =
 {
@@ -15,7 +21,7 @@ int map[10][10] =
     {1,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0},
+    {1,0,0,0,0,0,0,0,0,1},
     {1,1,1,1,1,1,1,1,1,1}
 };
 
@@ -23,14 +29,20 @@ int map[10][10] =
 void init() {
     glClearColor(0.3, 0.3, 0.3, 0.0); // Fundo cinza
     gluOrtho2D(0, 800, 600, 0);
-    px = 300; py = 300;
+    px = 300; py = 300; pa = 0; pdx = cos(pa)*5; pdy = sin(pa)*5;
 }
 
 void drawPlayer(){
     glColor3f(1, 0, 0);
-    glPointSize(30);
+    glPointSize(10);
     glBegin(GL_POINTS);
     glVertex2i(px, py);
+    glEnd();
+
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex2i(px, py);
+    glVertex2i(px+pdx*5,py+pdy*5);
     glEnd();
 }
 
@@ -45,10 +57,10 @@ void drawMap2D(){
             }
             xo = x*mapS; yo = y*mapS;
             glBegin(GL_QUADS);
-            glVertex2i(xo, yo);
-            glVertex2i(xo, yo+mapS);
-            glVertex2i(xo+mapS, yo+mapS);
-            glVertex2i(xo+mapS, yo);
+            glVertex2i(xo + 1, yo + 1);
+            glVertex2i(xo + 1, yo+mapS - 1);
+            glVertex2i(xo+mapS - 1, yo+mapS - 1);
+            glVertex2i(xo+mapS - 1, yo + 1);
             glEnd();
         }
     }
@@ -62,10 +74,26 @@ void display() {
 }
 
 void buttons(unsigned char key, int x, int y){
-    if(key== 'a') px-=10;
-    if(key== 'd') px+=10;
-    if(key== 'w') py-=10;
-    if(key== 's') py+=10;
+    if(key == 'a'){
+        pa -= 0.1; 
+        if(pa < 0) pa += 2*PI;
+        pdx = cos(pa)*5;
+        pdy = sin(pa)*5;
+    } 
+    if(key == 'd') {
+        pa += 0.1;
+        if(pa > 2*PI) pa -= 2*PI;
+        pdx = cos(pa)*5;
+        pdy = sin(pa)*5;
+    };
+    if(key == 'w') {
+        px += pdx;
+        py += pdy;
+    }
+    if(key == 's') {
+        px -= pdx;
+        py -= pdy;
+    }
     glutPostRedisplay();
 }
 
