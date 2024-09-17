@@ -4,9 +4,6 @@
 #include <stdio.h>
 #define PI 3.141592653
 
-
-
-
 float px, py, pdx, pdy, pa; //player possition
 
 /* Map config*/
@@ -25,11 +22,15 @@ int map[10][10] =
     {1,1,1,1,1,1,1,1,1,1}
 };
 
+void setDeltaPlayer(){
+    pdx = cos(pa)*5; pdy = sin(pa)*5;
+}
 
 void init() {
     glClearColor(0.3, 0.3, 0.3, 0.0); // Fundo cinza
     gluOrtho2D(0, 800, 600, 0);
-    px = 300; py = 300; pa = 0; pdx = cos(pa)*5; pdy = sin(pa)*5;
+    px = 300; py = 300; pa = 0; 
+    setDeltaPlayer();
 }
 
 void drawPlayer(){
@@ -77,14 +78,12 @@ void buttons(unsigned char key, int x, int y){
     if(key == 'a'){
         pa -= 0.1; 
         if(pa < 0) pa += 2*PI;
-        pdx = cos(pa)*5;
-        pdy = sin(pa)*5;
+        setDeltaPlayer();
     } 
     if(key == 'd') {
         pa += 0.1;
         if(pa > 2*PI) pa -= 2*PI;
-        pdx = cos(pa)*5;
-        pdy = sin(pa)*5;
+        setDeltaPlayer();
     };
     if(key == 'w') {
         px += pdx;
